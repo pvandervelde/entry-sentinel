@@ -1,0 +1,153 @@
+# Technology Decisions and Standards — CogWorks
+# Referenced by AGENTS.md and docs/spec/constraints.md.
+# Update this file when making technology choices or changing standards.
+
+# ────────────────────────────────
+# Primary Language
+# ────────────────────────────────
+language: rust
+edition: "2021"
+
+# ────────────────────────────────
+# Naming Conventions
+# ────────────────────────────────
+naming:
+  functions: snake_case
+  variables: snake_case
+  types: PascalCase # structs, enums, type aliases
+  constants: SCREAMING_SNAKE_CASE
+  modules: snake_case
+  test_functions: "test_{function}_{scenario}_{expected}"
+
+# ────────────────────────────────
+# Size Limits
+# ────────────────────────────────
+limits:
+  max_function_lines: 50
+  max_file_lines: 500
+  max_cyclomatic_complexity: 10
+
+# ────────────────────────────────
+# Code Rules
+# ────────────────────────────────
+rules:
+  - no_unwrap_in_production # unwrap()/expect() only in tests and main entry point
+  - no_expect_in_production
+  - no_global_mutable_state
+  - result_based_error_handling # business errors are values (Result<T,E>), not panics
+  - structured_logging_only # use tracing macros: trace!/debug!/info!/warn!/error!
+  - no_println_in_library # println!/eprintln! not permitted in library crates
+
+# ────────────────────────────────
+# Testing
+# ────────────────────────────────
+testing:
+  framework: cargo_test # standard Rust test harness
+  additional_tools:
+    - cargo-nextest # faster test runner (CI)
+    - cargo-mutants # mutation testing
+  coverage_targets:
+    business_logic: 100 # stage executors, classifiers, validators, planners
+    integration: 90
+    infrastructure: 80
+  mutation_score_minimum: 70 # percent — minimum acceptable mutation score
+
+  # Test naming convention
+  test_naming: "test_{function}_{scenario}_{expected}"
+
+  # Required test types
+  required_test_types:
+    - unit # Fast, isolated, no I/O
+    - integration # With real domain service subprocess or GitHub API sandbox
+    - property # Property-based tests for parsing and validation logic
+
+# ────────────────────────────────
+# Formatting & Linting
+# ────────────────────────────────
+formatting:
+  tool: rustfmt
+  config_file: rustfmt.toml # project-level overrides
+
+linting:
+  tool: clippy
+  level: "deny(warnings)" # CI fails on any Clippy warning
+  additional_lints:
+    - clippy::pedantic
+    - clippy::unwrap_used
+    - clippy::expect_used
+
+# ────────────────────────────────
+# Error Handling Libraries
+# ────────────────────────────────
+error_handling:
+  library_errors: thiserror # derive-based error types for library crates
+  application_errors: anyhow # context-rich error propagation in binary crates
+  never_discard: true # all Results must be explicitly handled or propagated
+
+# ────────────────────────────────
+# Async Runtime
+# ────────────────────────────────
+async:
+  runtime: tokio
+  flavor: multi_thread
+
+# ────────────────────────────────
+# Observability
+# ────────────────────────────────
+observability:
+  tracing_crate: tracing # structured spans and events
+  metrics: opentelemetry # OTEL-compatible metrics
+  no_plain_log_strings: true # all log statements must include structured fields
+
+# ────────────────────────────────
+# Security
+# ────────────────────────────────
+security:
+  no_hardcoded_secrets: true
+  no_shell_interpolation: true # never pass user-controlled data to shell commands
+  dependency_scanning:
+    tool: cargo-audit
+    schedule: weekly
+    fail_on: high # severity: low | medium | high | critical
+
+# ────────────────────────────────
+# Documentation
+# ────────────────────────────────
+documentation:
+  public_api: required # all pub types and functions require /// doc comments
+  examples: required_for_non_trivial
+  doc_tests: encouraged
+  adr_required_for:
+    - "Architectural decisions"
+    - "Technology choices"
+    - "Security model changes"
+    - "Extension API changes"
+
+# ────────────────────────────────
+# Dependencies
+# ────────────────────────────────
+dependencies:
+  policy: minimal # prefer stdlib; justify every added crate in PR
+
+# ────────────────────────────────
+# Task Tracking
+# ────────────────────────────────
+task_tracking:
+  tool: beads
+  required_in_commit: recommended # include bd-xxx in commit messages
+  auto_close_on_merge: false # manual close for explicit decision tracking
+
+  types:
+    - feature # New functionality
+    - bug # Bug fixes
+    - refactor # Code improvements
+    - docs # Documentation
+    - infrastructure # Build, deploy, tooling
+    - security # Security fixes/improvements
+
+# ────────────────────────────────
+# Git Conventions
+# ────────────────────────────────
+git:
+  commit_message_format: conventional_commits # feat:/fix:/docs:/chore:/refactor:/test:
+  branch_naming: "feature/*|fix/*|docs/*|chore/*|refactor/*"
