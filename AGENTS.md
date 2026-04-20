@@ -4,7 +4,7 @@ This file provides guidance and context for AI coding assistants working on this
 
 ## Project Overview
 
-Entry Sentinel is a standalone service backed by a GitHub App that guards the intake boundary of the OffAxis Dynamics issue pipeline. Every newly created issue passes through Entry Sentinel before any other automation touches it. Its sole responsibility is to determine whether an issue is safe to process, applying the appropriate label to route it into the pipeline or into quarantine for human review.
+Entry Sentinel is a standalone service backed by a GitHub App that guards the intake boundary of the issue pipeline. Every newly created issue passes through Entry Sentinel before any other automation touches it. Its sole responsibility is to determine whether an issue is safe to process, applying the appropriate label to route it into the pipeline or into quarantine for human review.
 
 Key traits:
 - **Security gate**: Entry Sentinel is the first and only gate before any downstream automation (Triage Titan, Scope-Sage, CogWorks) acts on an issue. No issue enters the pipeline without an explicit `clean` verdict.
