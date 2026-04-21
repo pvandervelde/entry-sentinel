@@ -25,16 +25,18 @@ There is no database, no message queue, and no persistent local state beyond the
 3. Retrieve the GitHub webhook secret from Vault
 4. Retrieve the GitHub App private key from Vault (for API authentication)
 5. Load and parse the detection signature library from the configured path/URL
-6. Publish / verify the Ed25519 public key is present in the service registry
-7. Bind the HTTP server to the configured address and port
-8. Begin accepting webhook events
+6. If AI second pass is enabled: validate the `AiPrompt` template structure (placeholder present, binary-verdict instruction present, content delimiters correct) — see C-54
+7. Publish / verify the Ed25519 public key is present in the service registry
+8. Start the Vault token renewal background task — see C-53
+9. Bind the HTTP server to the configured address and port
+10. Begin accepting webhook events
 
-**Any failure in steps 1–7 is a hard startup failure.** The process exits with a non-zero status code and a structured error message. It does not start accepting traffic in a degraded state.
+**Any failure in steps 1–9 is a hard startup failure.** The process exits with a non-zero status code and a structured error message. It does not start accepting traffic in a degraded state.
 
 ### Health and Readiness
 
 - `/health` — returns HTTP 200 if the process is running; no dependency checks
-- `/ready` — returns HTTP 200 only if all startup checks passed (Vault reachable, signature library loaded, app credentials valid)
+- `/ready` — returns HTTP 200 only if all startup checks passed (Vault reachable, signature library loaded, app credentials valid, AI prompt template valid if AI enabled, Vault token renewal task running)
 
 Kubernetes (or equivalent) should use `/ready` for the readiness probe and `/health` for the liveness probe.
 

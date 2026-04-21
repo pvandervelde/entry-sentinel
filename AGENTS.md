@@ -98,7 +98,7 @@ This project uses Beads (bd) for AI-friendly task tracking.
 
 ### Quick reference
 
-``bash
+```bash
 bd ready              # Show tasks ready to work on
 bd create "desc" -p 1 # Create new task (priority 1-5)
 bd show bd-xyz        # Show task details
@@ -106,4 +106,4 @@ bd update bd-xyz working  # Mark task in progress
 bd close bd-xyz       # Close completed task
 bd search "keyword"   # Search tasks
 bd doctor             # Check for orphaned work
-``
+```

@@ -279,7 +279,7 @@ This target must be run for a minimum of **10 minutes in CI** (not 60 seconds li
 
 | Module | Line Coverage | Mutation Score |
 |---|---|---|
-| Detection (`deterministic`, `ai_detector`, `scanner`) | 100% | ≥70% |
+| Detection (`deterministic`, `ai_detector`, `scanner`) | 100% | ≥90% (security-critical — see C-34 and §Mutation Tests) |
 | Content integrity (`hasher`, `parser`, `builder`) | 100% | ≥70% |
 | Verdict routing | 100% | ≥70% |
 | Approval and quarantine handlers | 100% | — |

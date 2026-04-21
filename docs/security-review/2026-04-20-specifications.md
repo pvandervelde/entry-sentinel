@@ -89,7 +89,7 @@ An unauthenticated queue message could inject fabricated `IssueEvent`s — for e
 
 **Remediation**:
 
-1. Add a constraint: "C-39: Queue-level authentication is mandatory when the queue intake path is active. The `QueueReceiver` must refuse to start if authentication credentials are absent or invalid. `where supported` is not an acceptable qualifier — the queue runtime must be chosen to guarantee message authentication."
+1. Add a constraint: "C-51: Queue-level authentication is mandatory when the queue intake path is active. The `QueueReceiver` must refuse to start if authentication credentials are absent or invalid. `where supported` is not an acceptable qualifier — the queue runtime must be chosen to guarantee message authentication."
 2. Update `security.md` T-02 to cover both intake paths, not just the webhook path.
 3. Document in `ADR-0008` what authentication mechanisms are provided by `queue-runtime` and confirm they are mandatory in that crate's design.
 
